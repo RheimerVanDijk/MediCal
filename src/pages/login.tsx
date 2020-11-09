@@ -27,6 +27,9 @@ export default function LoginPage({ navigation }: any) {
   // state for red delete button class
   let [deleteClass, setDeleteClass] = useState(false);
 
+  // state for pincode msg
+  let [pincodeMsg, setPincodeMsg] = useState("Enter your pincode");
+
   // State for dots class
   let [dotArray, setDotArray] = useState([
     false,
@@ -182,9 +185,16 @@ export default function LoginPage({ navigation }: any) {
 
   // Function to login on the app
   async function pinLogin() {
-    await secureStore.setItem("testValue", "123456");
-    // console.log(await secureStore.getItem("testValue"));
-    await secureStore.deleteItem("testValue");
+    const pin = pinArray.join("");
+    if (pin == (await secureStore.getItem("pincode"))) {
+      navigation.navigate("Dashbaord");
+    } else {
+      pinArray = [];
+      controlDots();
+      checkAcceptClass();
+      checkDeleteClass();
+      setPincodeMsg("Pincode was incorrect try again");
+    }
   }
 
   async function userCheck() {
@@ -219,7 +229,7 @@ export default function LoginPage({ navigation }: any) {
             </Button>
           </Container>
           <Container style={viewContainer.pinText}>
-            <Text>Enter your passcode</Text>
+            <Text>{pincodeMsg}</Text>
           </Container>
           <Container style={viewContainer.pinViewField}>{listDots}</Container>
         </Container>

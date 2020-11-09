@@ -5,6 +5,7 @@ import { Container } from "native-base";
 // Pages
 import LoginPage from "./src/pages/Login";
 import RegisterPage from "./src/pages/Register";
+import DashbaordPage from "./src/pages/Dashboard";
 
 // Navigation
 import { NavigationContainer } from "@react-navigation/native";
@@ -24,6 +25,11 @@ export default function App() {
           <Stack.Screen
             name="Register"
             component={RegisterPage}
+            options={{ gestureEnabled: false }}
+          />
+          <Stack.Screen
+            name="Dashbaord"
+            component={DashbaordPage}
             options={{ gestureEnabled: false }}
           />
         </Stack.Navigator>
