@@ -4,6 +4,7 @@ import { Container, Text, Button, Icon } from "native-base";
 
 // Classes
 import secureStoreClass from "../classes/secureStore";
+import utilsClass from "../classes/utils";
 
 // Style
 import Style from "../style/login/style";
@@ -14,9 +15,12 @@ const pincodeContainer = Style.pincodeContainer;
 
 // Variabelen
 let pinArray: number[] = [];
-const secureStore = new secureStoreClass();
 
-export default function LoginPage() {
+// init classes
+const secureStore = new secureStoreClass();
+const utils = new utilsClass();
+
+export default function LoginPage({ navigation }: any) {
   // state for geen check class
   let [acceptClass, setAcceptClass] = useState(false);
 
@@ -73,7 +77,10 @@ export default function LoginPage() {
     <Container style={pincodeContainer.pincodeField}>
       {numberArray.map((numRow, index) => {
         return (
-          <Container style={pincodeContainer.pincodeFieldRow} key={index}>
+          <Container
+            style={pincodeContainer.pincodeFieldRow}
+            key={utils.uuid()}
+          >
             {numRow.map((num, index) => {
               return (
                 <Button
@@ -81,7 +88,7 @@ export default function LoginPage() {
                   transparent
                   full
                   onPress={() => pinCode(num)}
-                  key={index * 10}
+                  key={utils.uuid()}
                 >
                   <Text style={pincodeContainer.buttonText}>{num}</Text>
                 </Button>
@@ -97,6 +104,7 @@ export default function LoginPage() {
               style={pincodeContainer.button}
               transparent
               full
+              key={utils.uuid()}
               onPress={row.function}
             >
               {row.type == "icon" ? (
@@ -122,7 +130,7 @@ export default function LoginPage() {
         viewContainer.pinDot,
         dotState ? viewContainer.pinFilled : viewContainer.pinNotFilled,
       ]}
-      key={index}
+      key={utils.uuid()}
     ></Container>
   ));
 
@@ -175,9 +183,22 @@ export default function LoginPage() {
   // Function to login on the app
   async function pinLogin() {
     await secureStore.setItem("testValue", "123456");
-    console.log(await secureStore.getItem("testValue"));
+    // console.log(await secureStore.getItem("testValue"));
     await secureStore.deleteItem("testValue");
   }
+
+  async function userCheck() {
+    // console.log(await secureStore.checkPin("pincode"));
+    if (await secureStore.checkPin("pincode")) {
+      navigation.navigate("Register");
+    }
+  }
+
+  async function deletePinTest() {
+    await secureStore.deleteItem("pincode");
+  }
+
+  userCheck();
 
   return (
     <Container style={loginContainer.Container}>
@@ -189,6 +210,13 @@ export default function LoginPage() {
               name="lock"
               style={viewContainer.iconColor}
             />
+            <Button
+              onPress={() => {
+                deletePinTest();
+              }}
+            >
+              <Text>Click</Text>
+            </Button>
           </Container>
           <Container style={viewContainer.pinText}>
             <Text>Enter your passcode</Text>

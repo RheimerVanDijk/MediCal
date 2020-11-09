@@ -30,4 +30,16 @@ export default class secureStore {
       await deleteItemAsync(key);
     }
   }
+
+  async checkPin(key: string) {
+    if (await this.checkSecureStore()) {
+      if ((await this.getItem(key)) == null) {
+        // pin doesnt exists
+        return true;
+      } else {
+        // pin exists
+        return false;
+      }
+    }
+  }
 }
