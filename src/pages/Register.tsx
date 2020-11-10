@@ -1,6 +1,7 @@
 // Components
 import React, { useState } from "react";
 import { Container, Text, Button, Icon } from "native-base";
+import Numberpad from "../components/Numberpad";
 
 // Classes
 import secureStoreClass from "../classes/secureStore";
@@ -77,57 +78,6 @@ export default function RegisterPage({ navigation }: any) {
       name: "backspace",
     },
   ];
-
-  // Var that builds the numberpad
-  const numberPad = (
-    <Container style={pincodeContainer.pincodeField}>
-      {numberArray.map((numRow, index) => {
-        return (
-          <Container
-            style={pincodeContainer.pincodeFieldRow}
-            key={utils.uuid()}
-          >
-            {numRow.map((num, index) => {
-              return (
-                <Button
-                  style={pincodeContainer.button}
-                  transparent
-                  full
-                  onPress={() => pinCode(num)}
-                  key={utils.uuid()}
-                >
-                  <Text style={pincodeContainer.buttonText}>{num}</Text>
-                </Button>
-              );
-            })}
-          </Container>
-        );
-      })}
-      <Container style={pincodeContainer.pincodeFieldRow}>
-        {lastLine.map((row, index) => {
-          return (
-            <Button
-              style={pincodeContainer.button}
-              transparent
-              full
-              key={utils.uuid()}
-              onPress={row.function}
-            >
-              {row.type == "icon" ? (
-                <Icon
-                  style={row.style}
-                  type="MaterialIcons"
-                  name={row.name}
-                ></Icon>
-              ) : (
-                <Text style={row.style}>{row.text}</Text>
-              )}
-            </Button>
-          );
-        })}
-      </Container>
-    </Container>
-  );
 
   // map function that build the dots jsx
   const listDots = dotArray.map((dotState, index) => (
@@ -245,7 +195,13 @@ export default function RegisterPage({ navigation }: any) {
           <Container style={viewContainer.pinViewField}>{listDots}</Container>
         </Container>
       </Container>
-      <Container style={pincodeContainer.Container}>{numberPad}</Container>
+      <Container style={pincodeContainer.Container}>
+        <Numberpad
+          numberArray={numberArray}
+          lastLine={lastLine}
+          pincodeFunc={pinCode}
+        ></Numberpad>
+      </Container>
     </Container>
   );
 }
