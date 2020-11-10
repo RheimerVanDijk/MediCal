@@ -1,9 +1,11 @@
 // Components
 import React, { useState } from "react";
 import { Container, Text, Button, Icon } from "native-base";
+import Numberpad from "../components/Numberpad";
 
 // Classes
 import secureStoreClass from "../classes/secureStore";
+import utilsClass from "../classes/utils";
 
 // Style
 import Style from "../style/login/style";
@@ -14,14 +16,20 @@ const pincodeContainer = Style.pincodeContainer;
 
 // Variabelen
 let pinArray: number[] = [];
-const secureStore = new secureStoreClass();
 
-export default function LoginPage() {
+// init classes
+const secureStore = new secureStoreClass();
+const utils = new utilsClass();
+
+export default function LoginPage({ navigation }: any) {
   // state for geen check class
   let [acceptClass, setAcceptClass] = useState(false);
 
   // state for red delete button class
   let [deleteClass, setDeleteClass] = useState(false);
+
+  // state for pincode msg
+  let [pincodeMsg, setPincodeMsg] = useState("Enter your pincode");
 
   // State for dots class
   let [dotArray, setDotArray] = useState([
@@ -68,53 +76,6 @@ export default function LoginPage() {
     },
   ];
 
-  // Var that builds the numberpad
-  const numberPad = (
-    <Container style={pincodeContainer.pincodeField}>
-      {numberArray.map((numRow, index) => {
-        return (
-          <Container style={pincodeContainer.pincodeFieldRow} key={index}>
-            {numRow.map((num, index) => {
-              return (
-                <Button
-                  style={pincodeContainer.button}
-                  transparent
-                  full
-                  onPress={() => pinCode(num)}
-                  key={index * 10}
-                >
-                  <Text style={pincodeContainer.buttonText}>{num}</Text>
-                </Button>
-              );
-            })}
-          </Container>
-        );
-      })}
-      <Container style={pincodeContainer.pincodeFieldRow}>
-        {lastLine.map((row, index) => {
-          return (
-            <Button
-              style={pincodeContainer.button}
-              transparent
-              full
-              onPress={row.function}
-            >
-              {row.type == "icon" ? (
-                <Icon
-                  style={row.style}
-                  type="MaterialIcons"
-                  name={row.name}
-                ></Icon>
-              ) : (
-                <Text style={row.style}>{row.text}</Text>
-              )}
-            </Button>
-          );
-        })}
-      </Container>
-    </Container>
-  );
-
   // map function that build the dots jsx
   const listDots = dotArray.map((dotState, index) => (
     <Container
@@ -122,7 +83,7 @@ export default function LoginPage() {
         viewContainer.pinDot,
         dotState ? viewContainer.pinFilled : viewContainer.pinNotFilled,
       ]}
-      key={index}
+      key={utils.uuid()}
     ></Container>
   ));
 
@@ -174,10 +135,29 @@ export default function LoginPage() {
 
   // Function to login on the app
   async function pinLogin() {
-    await secureStore.setItem("testValue", "123456");
-    console.log(await secureStore.getItem("testValue"));
-    await secureStore.deleteItem("testValue");
+    const pin = pinArray.join("");
+    if (pin == (await secureStore.getItem("pincode"))) {
+      navigation.navigate("Dashbaord");
+    } else {
+      pinArray = [];
+      controlDots();
+      checkAcceptClass();
+      checkDeleteClass();
+      setPincodeMsg("Pincode was incorrect try again");
+    }
   }
+
+  async function userCheck() {
+    if (await secureStore.checkPin("pincode")) {
+      navigation.navigate("Register");
+    }
+  }
+
+  async function deletePinTest() {
+    await secureStore.deleteItem("pincode");
+  }
+
+  userCheck();
 
   return (
     <Container style={loginContainer.Container}>
@@ -189,14 +169,27 @@ export default function LoginPage() {
               name="lock"
               style={viewContainer.iconColor}
             />
+            <Button
+              onPress={() => {
+                deletePinTest();
+              }}
+            >
+              <Text>Click</Text>
+            </Button>
           </Container>
           <Container style={viewContainer.pinText}>
-            <Text>Enter your passcode</Text>
+            <Text>{pincodeMsg}</Text>
           </Container>
           <Container style={viewContainer.pinViewField}>{listDots}</Container>
         </Container>
       </Container>
-      <Container style={pincodeContainer.Container}>{numberPad}</Container>
+      <Container style={pincodeContainer.Container}>
+        <Numberpad
+          numberArray={numberArray}
+          lastLine={lastLine}
+          pincodeFunc={pinCode}
+        ></Numberpad>
+      </Container>
     </Container>
   );
 }
