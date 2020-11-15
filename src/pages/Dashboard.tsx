@@ -1,10 +1,14 @@
 // Components
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Alert } from "react-native";
 import { Container, Text, Button, Icon, Content } from "native-base";
 import AppointmentCard from "../components/dashboard/AppointmentCard";
+import { useFocusEffect } from "@react-navigation/native";
+import * as SQLite from "expo-sqlite";
 
 // Classes
 import utilsClass from "../classes/utils";
+import DBclass from "../classes/database";
 
 // Style
 import Style from "../style/dashboard/style";
@@ -15,17 +19,59 @@ const dashboardBody = Style.body;
 
 // Init classes
 const utils = new utilsClass();
+const DB = new DBclass();
 
 export default function DashbaordPage({ navigation }: any) {
+  const [cards, setCards] = useState<object[]>([]);
+
   function toAddApointment() {
     navigation.navigate("AddAppointment");
+  }
+
+  useEffect(() => {
+    console.log("effect");
+    async function getCards() {
+      if (cards.length == 0) {
+        setCards(await DB.getAllAppointments());
+      }
+    }
+
+    getCards();
+  }, []);
+
+  useFocusEffect(() => {
+    async function getCards() {
+      setCards(await DB.getAllAppointments());
+    }
+    getCards();
+  });
+
+  function deleteDay() {
+    Alert.alert(
+      "Refresh day",
+      "Are you sure you want to delete al the data of this day?",
+      [
+        {
+          text: "No",
+          style: "cancel",
+        },
+        {
+          text: "Yes",
+          onPress: async () => {
+            if (await DB.deleteAllAppointments()) {
+              setCards([]);
+            }
+          },
+        },
+      ]
+    );
   }
 
   return (
     <Container style={dashboard.container}>
       <Container style={dashboardHeader.container}>
         <Container style={dashboardHeader.rowTop}>
-          <Button full transparent>
+          <Button full transparent onPress={() => deleteDay()}>
             <Icon type="MaterialIcons" style={dashboardHeader.iconLeft}>
               refresh
             </Icon>
@@ -53,17 +99,9 @@ export default function DashbaordPage({ navigation }: any) {
       <Container style={dashboardBody.container}>
         <Content>
           <Content style={dashboardBody.list}>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
-            <AppointmentCard></AppointmentCard>
+            {cards.map((el) => (
+              <AppointmentCard data={el} key={utils.uuid()}></AppointmentCard>
+            ))}
           </Content>
         </Content>
       </Container>

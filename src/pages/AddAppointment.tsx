@@ -14,12 +14,16 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 // Classes
+import DBclass from "../classes/database";
 
 // Style
 import Style from "../style/addAppointment/style";
 
 const appointmentHeader = Style.header;
 const appointmentBody = Style.body;
+
+// Init class
+const DB = new DBclass();
 
 export default function AddAppointmentPage({ navigation }: any) {
   // from states
@@ -62,8 +66,19 @@ export default function AddAppointmentPage({ navigation }: any) {
     setToShow(value);
   }
 
+  // Input states
+  const [Alocation, setALocation] = useState("");
+  const [patient, setPatient] = useState("");
+
   function toDashboardPage() {
     navigation.navigate("Dashbaord");
+  }
+
+  async function addAppointment() {
+    if (await DB.addAppointment(fromTime, toTime, Alocation, patient)) {
+      console.log("scucces");
+      navigation.navigate("Dashbaord");
+    }
   }
 
   return (
@@ -150,14 +165,23 @@ export default function AddAppointmentPage({ navigation }: any) {
               )}
               <Item stackedLabel last>
                 <Label>Patient name:</Label>
-                <Input />
+                <Input
+                  onChangeText={(patient) => setPatient(patient)}
+                  defaultValue={patient}
+                />
               </Item>
               <Item stackedLabel last>
                 <Label>Location/ Room:</Label>
-                <Input />
+                <Input
+                  onChangeText={(Alocation) => setALocation(Alocation)}
+                  defaultValue={Alocation}
+                />
               </Item>
             </Form>
-            <Button style={appointmentBody.doneButton}>
+            <Button
+              style={appointmentBody.doneButton}
+              onPress={() => addAppointment()}
+            >
               <Text>Add</Text>
             </Button>
           </Content>

@@ -7,15 +7,17 @@ import Style from "../../style/dashboard/appointmentCard";
 
 const card = Style.card;
 
-export default function AppointmentCard() {
+export default function AppointmentCard(props: any) {
   return (
     <Container style={card.container}>
       <Container style={card.rowTop}>
-        <Text style={card.time}>09:00 - 10:00</Text>
-        <Text style={card.room}>A1.02</Text>
+        <Text style={card.time}>
+          {props.data.from} - {props.data.to}
+        </Text>
+        <Text style={card.room}>{props.data.location}</Text>
       </Container>
       <Container style={card.rowBottom}>
-        <Text style={card.patient}>Patient 1</Text>
+        <Text style={card.patient}>{props.data.patient}</Text>
         <Icon type="MaterialIcons" style={card.icon}>
           arrow_forward
         </Icon>
