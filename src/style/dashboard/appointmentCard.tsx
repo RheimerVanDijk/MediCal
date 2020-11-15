@@ -2,6 +2,13 @@ import { StyleSheet } from "react-native";
 
 const Style = {
   card: StyleSheet.create({
+    button: {
+      marginBottom: 20,
+      height: 95,
+      maxHeight: 95,
+      backgroundColor: "transparent",
+    },
+
     container: {
       height: 95,
       maxHeight: 95,
@@ -21,7 +28,6 @@ const Style = {
       shadowOpacity: 0.26,
       shadowRadius: 4.46,
       elevation: 8,
-      marginBottom: 20,
     },
 
     rowBottom: {

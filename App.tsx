@@ -7,6 +7,7 @@ import LoginPage from "./src/pages/Login";
 import RegisterPage from "./src/pages/Register";
 import DashbaordPage from "./src/pages/Dashboard";
 import AddAppointmentPage from "./src/pages/AddAppointment";
+import AppointmentPage from "./src/pages/Appointment";
 
 // Navigation
 import { NavigationContainer } from "@react-navigation/native";
@@ -34,6 +35,7 @@ export default function App() {
             options={{ gestureEnabled: false }}
           />
           <Stack.Screen name="AddAppointment" component={AddAppointmentPage} />
+          <Stack.Screen name="Appointment" component={AppointmentPage} />
         </Stack.Navigator>
       </NavigationContainer>
     </Container>

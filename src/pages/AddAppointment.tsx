@@ -28,7 +28,7 @@ const DB = new DBclass();
 export default function AddAppointmentPage({ navigation }: any) {
   // from states
   const [fromDate, setFromDate] = useState(new Date());
-  const [fromTime, setFromTime] = useState("00:00");
+  const [fromTime, setFromTime] = useState(getStartTime());
   const [fromShow, setFromShow] = useState(false);
   const fromMode = "time";
 
@@ -48,7 +48,7 @@ export default function AddAppointmentPage({ navigation }: any) {
 
   // to states
   const [toDate, setToDate] = useState(new Date());
-  const [toTime, setToTime] = useState("00:00");
+  const [toTime, setToTime] = useState(getStartTime());
   const [toShow, setToShow] = useState(false);
   const toMode = "time";
 
@@ -64,6 +64,14 @@ export default function AddAppointmentPage({ navigation }: any) {
 
   function toShowMode(value: boolean) {
     setToShow(value);
+  }
+
+  function getStartTime() {
+    const date = new Date();
+
+    return `${date.getHours()}:${
+      date.getMinutes() >= 0 && date.getMinutes() < 10 ? "0" : ""
+    }${date.getMinutes()}`;
   }
 
   // Input states
